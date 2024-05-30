@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -45,6 +46,13 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void removeFavorite(value){
+    favorites.remove(value);
+    notifyListeners();
+  }
+
+  
 }
 
 class MyHomePage extends StatefulWidget {
@@ -90,10 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      body: Container(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        child: page,
-      ),
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      body: page,
       bottomNavigationBar: NavigationBar(
         destinations: [
           NavigationDestination(
@@ -204,23 +210,80 @@ class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final theme = Theme.of(context);
+
     var appState = context.watch<MyAppState>();
     var messages =  <WordPair>[];
-    // if (appState.favorites.isEmpty) {
-    //   return Center(
-    //     child: Text('No favorites yet.'),
-    //   );
-    // }
-    // else{
+    if (appState.favorites.isEmpty) {
+      return Center(
+        child: Text('No favorites yet.'),
+      );
+    }
+    else{
       messages = appState.favorites;
-    // }
+    }
 
-    return ListView.builder(
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(left:20.0, top: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("you have ${messages.length} favourites :", style: const TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: FavouritesGrid(messages: messages, theme: theme),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FavouritesGrid extends StatelessWidget {
+  const FavouritesGrid({
+    super.key,
+    required this.messages,
+    required this.theme,
+  });
+
+  final List<WordPair> messages;
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 3, crossAxisSpacing: 2.0, mainAxisSpacing: 2.0),
+      // padding: EdgeInsets.zero,
       shrinkWrap: true,
       itemCount: messages.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(messages[index].toString()),
+        return Container(
+          margin: EdgeInsets.all(5),
+          decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.primary, width: 2)),
+          padding: const EdgeInsets.only(left: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    size: 18.0,
+                    color: theme.colorScheme.primary,
+                    shadows: <Shadow>[Shadow(color: theme.colorScheme.primary , blurRadius: 3.0)],
+                  ),
+                  onPressed: () =>{ 
+                    appState.removeFavorite(messages[index])
+                  },
+                ),
+                Text(messages[index].toString()),
+              ],
+            ),
         );
       },
     );
