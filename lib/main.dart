@@ -265,7 +265,7 @@ class FavouritesGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         return Container(
           margin: EdgeInsets.all(5),
-          decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.primary, width: 2)),
+          decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.primary, width: 2),borderRadius: BorderRadius.all(Radius.circular(25))),
           padding: const EdgeInsets.only(left: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -273,15 +273,15 @@ class FavouritesGrid extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     Icons.delete_outline,
-                    size: 18.0,
+                    size: 24.0,
                     color: theme.colorScheme.primary,
-                    shadows: <Shadow>[Shadow(color: theme.colorScheme.primary , blurRadius: 3.0)],
+                    shadows: <Shadow>[Shadow(color: Colors.white , blurRadius: 10.0)],
                   ),
                   onPressed: () =>{ 
                     appState.removeFavorite(messages[index])
                   },
                 ),
-                Text(messages[index].toString()),
+                Text(messages[index].toString(), style: TextStyle(fontSize: 16),),
               ],
             ),
         );
