@@ -31,7 +31,6 @@ class MyAppState extends ChangeNotifier {
 
   void getNext() {
     current = WordPair.random();
-    print("------------");
     notifyListeners();
   }
 
@@ -52,7 +51,30 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  
+  void showToast(BuildContext context, WordPair value){
+    ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          RichText(
+            text: TextSpan(
+              text:"Removed ",
+              children: <TextSpan>[ 
+                TextSpan(text: value.toString(), style: TextStyle(fontWeight: FontWeight.bold) ),
+               TextSpan(text:" from favourites"),
+              ],
+            ),
+          ),
+        ],
+      ),
+      shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(20.0) ),
+      behavior: SnackBarBehavior.floating,
+      // width: 260.0,
+      duration: const Duration(milliseconds: 800),
+      elevation: 0,
+    ));
+  }
+
 }
 
 class MyHomePage extends StatefulWidget {
@@ -194,12 +216,22 @@ class BigCard extends StatelessWidget {
     final style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
+    final styleWord = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+      fontWeight: FontWeight.bold
+    );
+
 
     return Card(
       color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(18.0),
-        child: Text(pair.asLowerCase, style: style),
+        child: Wrap(
+          children: [
+            Text(pair.first, style: style),
+            Text(pair.second, style: styleWord,),
+          ],
+        ),
       ),
     );
   }
@@ -224,20 +256,22 @@ class FavoritesPage extends StatelessWidget {
     }
 
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left:20.0, top: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("you have ${messages.length} favourites :", style: const TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.only(right: 20),
-                child: FavouritesGrid(messages: messages, theme: theme),
+      child: Padding(
+        padding: const EdgeInsets.only(left:20.0, top: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("you have ${messages.length} favourites :", style: const TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 10),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: FavouritesGrid(messages: messages, theme: theme),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -262,6 +296,7 @@ class FavouritesGrid extends StatelessWidget {
       // padding: EdgeInsets.zero,
       shrinkWrap: true,
       itemCount: messages.length,
+      physics: ScrollPhysics(),
       itemBuilder: (context, index) {
         return Container(
           margin: EdgeInsets.all(5),
@@ -278,7 +313,8 @@ class FavouritesGrid extends StatelessWidget {
                     shadows: <Shadow>[Shadow(color: Colors.white , blurRadius: 10.0)],
                   ),
                   onPressed: () =>{ 
-                    appState.removeFavorite(messages[index])
+                    appState.showToast(context, messages[index]),
+                    appState.removeFavorite(messages[index]),
                   },
                 ),
                 Text(messages[index].toString(), style: TextStyle(fontSize: 16),),
