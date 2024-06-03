@@ -164,65 +164,77 @@ class GeneratorPage extends StatelessWidget {
           //     itemBuilder: (context, i) =>
           //         Text(appState.favorites[i].toString())),
 
-          Container(
-            height: 250,
-            child: favList.isEmpty
-                ? Center(child: Text('Tap on Like to Add Favorites'))
-                : ListView.builder(
-                    itemCount: favList.length > 4 ? 4 : favList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      int itemIndex = favList.length > 4
-                          ? (favList.length - 4 + index)
-                          : index;
-
-                      return ListTile(
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.favorite),
-                            SizedBox(
-                              width: 10,
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                favList.isEmpty
+                    ? Text('Tap on Like to Add Favorites')
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: favList.length > 4 ? 4 : favList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          int itemIndex = favList.length > 4
+                              ? (favList.length - 4 + index)
+                              : index;
+                
+                          return ListTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.favorite),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(favList[itemIndex].toString()),
+                              ],
                             ),
-                            Text(favList[itemIndex].toString()),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                          );
+                        },
+                      ),
+              ],
+            ),
           ),
-
-          BigCard(pair: pair),
-          SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavorite();
-                },
-                icon: Icon(
-                  icon,
-                  size: 20.0,
-                ),
-                label: Text('Like'),
-              ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  appState.getNext();
-                  print(favList.isEmpty);
-                },
-                child: Row(
+        
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                BigCard(pair: pair),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Next'),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 18.0,
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        appState.toggleFavorite();
+                      },
+                      icon: Icon(
+                        icon,
+                        size: 20.0,
+                      ),
+                      label: Text('Like'),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        appState.getNext();
+                        print(favList.isEmpty);
+                      },
+                      child: Row(
+                        children: [
+                          Text('Next'),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 18.0,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
